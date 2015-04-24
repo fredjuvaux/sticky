@@ -21,6 +21,7 @@
       wrapperClassName: 'sticky-wrapper',
       center: false,
       getWidthFrom: '',
+      responsiveBreakpoint: 768,
       widthFromWrapper: true, // works only when .getWidthFrom is empty
       responsiveWidth: false
     },
@@ -39,7 +40,7 @@
           elementTop = s.stickyWrapper.offset().top,
           etse = elementTop - s.topSpacing - extra;
 
-        if (scrollTop <= etse) {
+        if (scrollTop <= etse || $window.width() < s.responsiveBreakpoint) {
           if (s.currentTop !== null) {
             s.stickyElement
               .css({
@@ -95,25 +96,6 @@
 
             s.currentTop = newTop;
           }
-        }
-      }
-    },
-    resizer = function() {
-      windowHeight = $window.height();
-
-      for (var i = 0; i < sticked.length; i++) {
-        var s = sticked[i];
-        var newWidth = null;
-        if ( s.getWidthFrom ) {
-            if ( s.responsiveWidth === true ) {
-                newWidth = $(s.getWidthFrom).width();
-            }
-        }
-        else if(s.widthFromWrapper) {
-            newWidth = s.stickyWrapper.width();
-        }
-        if ( newWidth != null ) {
-            s.stickyElement.css('width', newWidth);
         }
       }
     },
@@ -183,13 +165,11 @@
       }
     };
 
-  // should be more efficient than using $window.scroll(scroller) and $window.resize(resizer):
+  // should be more efficient than using $window.scroll(scroller):
   if (window.addEventListener) {
     window.addEventListener('scroll', scroller, false);
-    window.addEventListener('resize', resizer, false);
   } else if (window.attachEvent) {
     window.attachEvent('onscroll', scroller);
-    window.attachEvent('onresize', resizer);
   }
 
   $.fn.sticky = function(method) {
